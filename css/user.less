@@ -1,0 +1,155 @@
+
+
+.user__box{
+    position: fixed;
+    top: 2%;
+    left: 95%;
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    &.toggle{
+        display:none;
+    }
+}
+
+.user__icon{
+    text-align: center;
+    p{
+        color:white;
+    }
+    i{
+        color: white;
+    }
+    :hover{
+        cursor: pointer;
+    }
+}
+
+.user__profile{
+    position: fixed;
+    width:300px;
+    height:100%;
+    background: linear-gradient(to bottom, #315265 0%, rgba(0, 0, 0, 0.6) 100%);
+    top:0;
+    right:-300px;
+    transition: right .5s linear;
+
+    &.toggle{
+        right:0;
+    }
+
+    .user__exit{
+        position:absolute;
+        top:0;
+        right:0;
+    }
+
+
+    i{
+        color:white;
+    }
+    .fa.fa-times:hover{
+        cursor: pointer;
+    }
+
+    .user__navbar{
+        background-color: #333;
+        width:100%;
+
+        ul {
+            list-style-type: none;
+            margin: 0 auto;
+            padding: 0;
+            overflow: hidden;
+            width:120px;
+            &.full{
+                width:215px;
+            }
+        }
+
+
+        li {
+            float: left;
+        }
+
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        li a:hover{
+            cursor: pointer;
+        }
+
+        li a:hover:not(.active) {
+            background-color: #111;
+        }
+
+
+        .toggle {
+            background-color: #4CAF50;
+        }
+    }
+
+    .user__stats{
+        display:none;
+        color:white;
+        p{
+            border-bottom:1px solid white;
+        }
+
+        &.toggle{
+            display:block;
+        }
+
+        .stats__top{
+            padding-top:15px;
+            text-align: center;
+        }
+
+        .stats__bottom{
+            li{
+                list-style: none;
+                padding:10px;
+                border-bottom:1px solid white;
+                .second{
+                    float:right;
+                }
+            }
+        }
+    }
+
+    .user__leaderboard{
+        display:none;
+        &.toggle{
+            display:block;
+        }
+
+        table{
+            width:100%;
+            font-family: 'Arial';
+            margin: 25px auto;
+            border-collapse: collapse;
+            thead{
+                border:0;
+            }
+            th{
+                background: #333;
+                text-transform: uppercase;
+                font-size: 12px;
+            }
+            th,td{
+                text-align: center;
+                color: #fff;
+                padding: 12px 35px;
+                border-collapse: collapse;
+            }
+            td{
+                border-bottom: 1px solid #fff;
+            }
+        }
+    }
+}

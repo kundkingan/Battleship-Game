@@ -1,0 +1,55 @@
+
+
+@import "base.less";
+@import "gameboard.less";
+@import "user.less";
+@import "connect.less";
+@import "setup.less";
+@import "gamemiddle.less";
+
+body{
+    overflow:hidden;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    min-height: 100%;
+    background-image:url('../img/big_front_img.jpg');
+}
+
+html {
+  height: 100%;
+}
+
+*,  {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+input, button {
+  outline: none;
+  border: none;
+}
+
+button{
+    height: 40px;
+    font-size: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background 1;
+    transition-duration: 1.5s;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+button:hover{
+    background: #4e9e4e;
+}
+
+// @mainColor: linear-gradient(to bottom, #315265 0%, rgba(0, 0, 0, 0.6) 100%);
+
+@gameColor: rgba(49,82,100,0.95);
+
+@buttonColor: rgba(255, 255, 255, 0.8);
+@buttonBackground: rgba(255, 255, 255, 0.2);
