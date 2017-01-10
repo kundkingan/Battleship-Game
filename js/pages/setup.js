@@ -93,17 +93,17 @@ function setupInfoBox(){
     '</div>');
 
     $('.game__submit.play').click(function() {
-        // if(boats === 0){
+        if(boats === 0){
             setupFinishConfig();
             setupFieldStructure('enemy');
             setupAddSpinner();
             setupMiddle();
             clientFindGamePartner();
-        // }else{
-            // if($('.game__boats__output').length === 0){
-            //     $('.game__boats').append('<p class="game__boats__output">You still have boats left</p>');
-            // }
-        // }
+        }else{
+            if($('.game__boats__output').length === 0){
+                $('.game__boats').append('<p class="game__boats__output">You still have boats left</p>');
+            }
+        }
     });
 }
 
