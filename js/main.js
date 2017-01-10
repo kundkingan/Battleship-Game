@@ -41,8 +41,7 @@ var i = 0,
     message,
 
     //SERVER VARS
-    // url = 'ws://127.0.0.1:8034',
-    url = 'ws://nodejs1.student.bth.se:8034',
+    url = 'ws://domain:port',
     websocket,
     incMessage;
 
