@@ -1,8 +1,6 @@
 
 
 function clientConnectToServer(username,guest) {
-    console.log(username);
-    console.log('Connecting to: ' + url);
     websocket = new window.WebSocket(url, 'broadcast-protocol');
 
     websocket.onopen = function() {
@@ -30,37 +28,30 @@ function clientConnectToServer(username,guest) {
         if ('connected' in incMessage) {
             partnerId = incMessage.partnerId;
             partnerUsername = incMessage.partnerUsername;
-            console.log('GAMEMODE');
             chatInitMatch();
             gameInit(incMessage.starting);
         }
 
         if ('coordinates' in incMessage) {
-            console.log(incMessage.coordinates + ' CORDS');
             gameCheckHitOrMiss(incMessage.coordinates);
         }
         if ('hitOrMiss' in incMessage) {
-            console.log('CHECKING turn after click');
             gameCheckTurn(incMessage.hitOrMiss);
         }
 
         if('yourTurn' in incMessage){
-            console.log('CHECKING its my turn');
             gameClickHandler(incMessage.yourTurn);
         }
 
         if('gameOver' in incMessage){
-            console.log('Its game over');
             gameEndScreen(incMessage.winner);
         }
 
         if('message' in incMessage){
-            console.log('Got a message from chat');
             chatAddMessage(incMessage.message,'enemy');
         }
 
         if('disconnected' in incMessage){
-            console.log(incMessage.disconnected);
             if(incMessage.disconnected === partnerUsername){
                 gameEndScreen(input_username,true);
             }
@@ -76,8 +67,6 @@ function clientFindGamePartner() {
     if (!websocket || websocket.readyState === 3) {
         console.log('The websocket is not connected to a server.');
     } else {
-        console.log("LOOKING FOR PARTER " + input_username);
-
         websocket.send(JSON.stringify({lfp: input_username}));
     }
 }
@@ -86,7 +75,6 @@ function clientSendCoordinates(coordinates) {
     if (!websocket || websocket.readyState === 3) {
         console.log('The websocket is not connected to a server.');
     } else {
-        console.log("SENDING clicked coordinates to enemy");
         message = {
             playing: true,
             coordinates: coordinates,
@@ -100,7 +88,6 @@ function clientSendTurn(hitOrMiss){
     if (!websocket || websocket.readyState === 3) {
         console.log('The websocket is not connected to a server.');
     } else {
-        console.log("SENDING to the clicker if its a hit or miss");
         message = {
             hitOrMiss: hitOrMiss,
             partnerId: partnerId,

@@ -1,8 +1,6 @@
-var port = 8034,
+var port = ,
 http = require('http'),
-// WebSocketServer = require('S:/Program(x86)/nodejs/node_modules/websocket').server,
-// WebSocketServer = require('C:/xampp/htdocs/~daae15/dbwebb-kurser/javascript/node_modules/websocket').server,
-WebSocketServer = require('/home/saxon/students/20152/daae15/node_modules/websocket').server,
+WebSocketServer = require('PATH').server,
 broadcastTo = [],
 connectedUsers = [],
 lookingForPartner = [],
@@ -28,17 +26,15 @@ wsServer = new WebSocketServer({
 
 // Always check and explicitly allow the origin
 function originIsAllowed(origin) {
-    if(origin === 'http://localhost:8080' || origin === 'http://www.student.bth.se') {
+    if(origin === 'http://localhost:8080' || origin === 'url') {
         return true;
     }
     return false;
-
 }
 
 function acceptConnectionAsBroadcast(request) {
     var connection = request.accept('broadcast-protocol', request.origin);
     connection.broadcastId = broadcastTo.push(connection) - 1;
-    // console.log((new Date()) + ' Broadcast connection accepted from ' + request.origin + ' id = ' + connection.broadcastId)
 
     connection.on('message', function(message){
         var clients = 0,
@@ -76,7 +72,6 @@ function acceptConnectionAsBroadcast(request) {
         }
 
         if('lfp' in incomingObj){
-            console.log(incomingObj);
             lookingForPartner.push(incomingObj.lfp);
             var user1,user2;
             if(lookingForPartner.length === 2){
@@ -107,7 +102,6 @@ function acceptConnectionAsBroadcast(request) {
         }
 
         if('playing' in incomingObj){
-            console.log('Playing obj');
             message = {
                 coordinates: incomingObj.coordinates,
             };
@@ -115,7 +109,6 @@ function acceptConnectionAsBroadcast(request) {
         }
 
         if('hitOrMiss' in incomingObj){
-            console.log('HitOrMiss obj');
             message = {
                 hitOrMiss: incomingObj.hitOrMiss,
             };
@@ -123,7 +116,6 @@ function acceptConnectionAsBroadcast(request) {
         }
 
         if('gameOver' in incomingObj){
-            console.log('gameOver obj');
             message = {
                 gameOver: true,
                 winner: incomingObj.winner,
@@ -133,7 +125,6 @@ function acceptConnectionAsBroadcast(request) {
         }
 
         if('message' in incomingObj){
-            console.log('message obj');
             if(incomingObj.partnerId !== undefined){
                 message = {
                     message: incomingObj.message
@@ -185,51 +176,4 @@ wsServer.on('request', function(request) {
   }
 
   acceptConnectionAsBroadcast(request);
-  // Loop through protocols. Accept by highest order first.
-  // for (var i=0; i < request.requestedProtocols.length; i++) {
-  //   if(request.requestedProtocols[i] === 'broadcast-protocol') {
-  //     status = acceptConnectionAsBroadcast(request);
-  //   } else if(request.requestedProtocols[i] === 'echo-protocol') {
-  //     status = acceptConnectionAsEcho(request);
-  //   }
-  // };
-
-  // Unsupported protocol.
-  if(!status) {
-    // acceptConnectionAsEcho(request, null);
-    //console.log('Subprotocol not supported');
-    //request.reject(404, 'Subprotocol not supported');
-  }
-
 });
-
-
-
-
-
-// function acceptConnectionAsEcho(request, subprotocol) {
-//     if(subprotocol === undefined) {
-//         subprotocol = 'echo-protocol';
-//     }
-//     var connection = request.accept(subprotocol, request.origin);
-//     console.log((new Date()) + ' Echo connection accepted from ' + request.origin);
-//
-//     // Callback to handle each message from the client
-//     connection.on('message', function(message) {
-//         if (message.type === 'utf8') {
-//             console.log('Received Message: ' + message.utf8Data);
-//             connection.sendUTF(message.utf8Data);
-//         }
-//         else if (message.type === 'binary') {
-//             console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
-//             connection.sendBytes(message.binaryData);
-//         }
-//     });
-//
-//     // Callback when client closes the connection
-//     connection.on('close', function(reasonCode, description) {
-//         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-//     });
-//
-//     return true;
-// }

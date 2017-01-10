@@ -12,13 +12,10 @@ $_SESSION['stats'] = false;
 $_SESSION['leaderboard'] = false;
 
 function connectToDatabase(){
-    // $hostname = 'localhost';
-    // $username = 'root';
-    // $password = '';
-    $dbname = 'daae15';
-    $hostname = 'blu-ray.student.bth.se';
-    $username = 'daae15';
-    $password = 'Tx0\F6e&';
+    $dbname = '';
+    $hostname = '';
+    $username = '';
+    $password = '';
     $db = new PDO("mysql:host=$hostname;dbname=$dbname;", $username, $password);
     return $db;
 }

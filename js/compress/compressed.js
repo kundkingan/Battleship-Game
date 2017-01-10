@@ -1,4 +1,4 @@
-(function(){
+$(document).ready(function(){
 var i = 0,
     k = 0,
     //LOGIN VARS
@@ -8,6 +8,7 @@ var i = 0,
     input_username,
     input_password,
     password,
+    guest = false,
 
     //SETUP VARS
     selectedPos,
@@ -41,10 +42,11 @@ var i = 0,
     message,
 
     //SERVER VARS
-    url = 'ws://127.0.0.1:8034',
-    // url = 'ws://nodejs1.student.bth.se:8034',
+    // url = 'ws://127.0.0.1:8034',
+    url = 'ws://nodejs1.student.bth.se:8034',
     websocket,
     incMessage;
+
 
 
 function htmlEntities(str) {
@@ -52,25 +54,15 @@ function htmlEntities(str) {
 }
 
 
-
+$(document).ready(function(){
     'use strict';
-    BackgroundSetImg();
     loginStructure();
     loginGuest();
-    loginGetInputVals();
+    // loginGetInputVals();
+});
 
-
-// var url = 'ws://nodejs1.student.bth.se:8034',
-
-//
-// function outputLog(message) {
-//     var now = new Date();
-//     $('#output').prepend(now.toLocaleString() + ' ' + message + '<br>');
-// }
 
 function clientConnectToServer(username,guest) {
-    console.log(username);
-    console.log('Connecting to: ' + url);
     websocket = new window.WebSocket(url, 'broadcast-protocol');
 
     websocket.onopen = function() {
@@ -83,7 +75,6 @@ function clientConnectToServer(username,guest) {
     };
 
     websocket.onmessage = function(event) {
-        // console.log('Receiving message: ' + event.data);
         incMessage = JSON.parse(event.data);
 
         if ('connectedToServer' in incMessage) {
@@ -99,39 +90,30 @@ function clientConnectToServer(username,guest) {
         if ('connected' in incMessage) {
             partnerId = incMessage.partnerId;
             partnerUsername = incMessage.partnerUsername;
-            console.log('GAMEMODE');
             chatInitMatch();
             gameInit(incMessage.starting);
-            // actionGame(incMessage.starting)
         }
 
         if ('coordinates' in incMessage) {
-            console.log('CHECKING coordinates from ENEMY - checking hit or miss');
             gameCheckHitOrMiss(incMessage.coordinates);
         }
         if ('hitOrMiss' in incMessage) {
-            console.log('CHECKING turn after click');
             gameCheckTurn(incMessage.hitOrMiss);
         }
 
         if('yourTurn' in incMessage){
-            console.log('CHECKING its my turn');
             gameClickHandler(incMessage.yourTurn);
         }
 
         if('gameOver' in incMessage){
-            console.log('Its game over');
             gameEndScreen(incMessage.winner);
         }
 
         if('message' in incMessage){
-            console.log('Got a message from chat');
             chatAddMessage(incMessage.message,'enemy');
         }
 
         if('disconnected' in incMessage){
-            console.log('wallalalalalla');
-            console.log(incMessage.disconnected);
             if(incMessage.disconnected === partnerUsername){
                 gameEndScreen(input_username,true);
             }
@@ -140,7 +122,6 @@ function clientConnectToServer(username,guest) {
 
     websocket.onclose = function() {
         console.log('The websocket is now closed.');
-        // alert('server down');
     };
 }
 
@@ -148,8 +129,6 @@ function clientFindGamePartner() {
     if (!websocket || websocket.readyState === 3) {
         console.log('The websocket is not connected to a server.');
     } else {
-        console.log("LOOKING FOR PARTER " + input_username);
-
         websocket.send(JSON.stringify({lfp: input_username}));
     }
 }
@@ -158,7 +137,6 @@ function clientSendCoordinates(coordinates) {
     if (!websocket || websocket.readyState === 3) {
         console.log('The websocket is not connected to a server.');
     } else {
-        console.log("SENDING clicked coordinates to enemy");
         message = {
             playing: true,
             coordinates: coordinates,
@@ -172,7 +150,6 @@ function clientSendTurn(hitOrMiss){
     if (!websocket || websocket.readyState === 3) {
         console.log('The websocket is not connected to a server.');
     } else {
-        console.log("SENDING to the clicker if its a hit or miss");
         message = {
             hitOrMiss: hitOrMiss,
             partnerId: partnerId,
@@ -206,9 +183,6 @@ function clientSendMessage(input_message){
         websocket.send(JSON.stringify(message));
     }
 }
-
-
-
 function userExists(data,type){
 
     if(data['success']){
@@ -318,16 +292,6 @@ function ajaxstatsProfileUpdate(){
         }
     });
 }
-
-function BackgroundSetImg(){
-    var height = $(window).height(),
-        width = $(window).width();
-
-    if(width < 1400 && width > 1000) $('body').css('background-image','url(img/small_front_img.jpg)');
-    if(width > 1400 && width < 2000) $('body').css('background-image','url(img/big_front_img.jpg)');
-
-    console.log('background img set');
-}
 function loginRemove(){
     $('.login').remove();
 }
@@ -359,17 +323,17 @@ function loginAddInputs(name){
         $('.login__form').append('' +
        '<div class="login__row">' +
            '<i class="fa fa-user" aria-hidden="true"></i>' +
-           '<input class="login__input name" name="name" type="text"   placeholder="name" required="required" value="namn" minlength=1 maxlength=15>' +
+           '<input class="login__input name" name="name" type="text" placeholder="name" required="required" minlength=1 maxlength=15>' +
        '</div>');
     }
     $('.login__form').append('' +
    '<div class="login__row">' +
        '<i class="fa fa-user" aria-hidden="true"></i>' +
-       '<input class="login__input username" name="username" type="text"   placeholder="Username" required="required" value="d" maxlength=15>' +
+       '<input class="login__input username" name="username" type="text" placeholder="Username" required="required" maxlength=15>' +
    '</div>'+
     '<div class="login__row">' +
         '<i class="fa fa-user" aria-hidden="true"></i>' +
-        '<input class="login__input password" name="password" type="password"   placeholder="Password" required="required" value="d" maxlength=15>' +
+        '<input class="login__input password" name="password" type="password" placeholder="Password" required="required" maxlength=15>' +
     '</div>');
 }
 
@@ -377,7 +341,7 @@ function loginGuest(){
     $('.login__form').prepend('' +
     '<div class="login__row">' +
        '<i class="fa fa-user" aria-hidden="true"></i>' +
-       '<input class="login__input username" name="username" type="text"   placeholder="Username" required="required" value="d" maxlength=15>' +
+       '<input class="login__input username" name="username" type="text" placeholder="Username" required="required"  maxlength=15>' +
     '</div>');
 
     $('.login__bottom').append('' +
@@ -386,11 +350,11 @@ function loginGuest(){
     );
 
     $('.login__submit.play').click(function(){
-        input_username = $('.login__input.username').val();
-        // if($.trim(input_username).length === 0){
-        //     input_username = 'guest_' + Daae.random(1,100000);
-        // }
-        clientConnectToServer(input_username,true);
+        if($('.login__input.username').val() !== ""){
+            input_username = $('.login__input.username').val();
+            guest = true;
+            clientConnectToServer(input_username,guest);
+        }
     });
 
     $('.login__submit.signin').click(function(){
@@ -412,7 +376,9 @@ function loginSignIn(){
 
     $('.login__submit.signin').click(function(){
         loginGetInputVals();
-        userSignIn(input_username,input_password);
+        if(input_username !== "" && input_password !== ""){
+            userSignIn(input_username,input_password);
+        }
     });
 
     $('.login__submit.back').click(function(){
@@ -431,7 +397,9 @@ function loginSignUp(){
 
     $('.login__submit.signup').click(function(){
         loginGetInputVals();
-        userSignUp(input_name,input_username,input_password);
+        if(input_name !== "" && input_username !== "" && input_password !== ""){
+            userSignUp(input_name,input_username,input_password);
+        }
     });
 
     $('.login__submit.back').click(function(){
@@ -572,14 +540,14 @@ function setupInfoBox(){
 
     $('.game__submit.play').click(function() {
         // if(boats === 0){
-            setupFinishConfig('config');
+            setupFinishConfig();
             setupFieldStructure('enemy');
             setupAddSpinner();
             setupMiddle();
             clientFindGamePartner();
         // }else{
             // if($('.game__boats__output').length === 0){
-                // $('.game__boats').append('<p class="game__boats__output">You still have boats left</p>');
+            //     $('.game__boats').append('<p class="game__boats__output">You still have boats left</p>');
             // }
         // }
     });
@@ -587,29 +555,24 @@ function setupInfoBox(){
 
 function setupShips() {
     $('.game__cell').click(function() {
-        selectedDiv = $(this).find('div');
-        selectedPos = $(selectedDiv).attr('class').split(' ').pop();
+        selectedDiv = $(this);
+        selectedPos = $(this).attr('class').split(' ').pop();
 
-        if ($(selectedDiv).attr('class').split(' ').pop() === 'empty') {
+        if ($(selectedDiv).attr('class').split(' ').pop() !== 'taken') {
             if (boats > 0) {
-                $(this).addClass('taken');
-                $(selectedDiv).removeClass('empty');
-                $(selectedDiv).addClass('taken');
-                for (i = 0; i < gameField.length; i++) {
-                    if (gameField[i] === $(this).attr('class').split(' ').pop()) {
-                        yourShipPos.push(gameField[i]);
-                    }
+                var index = gameField.indexOf(selectedPos);
+                if (gameField.indexOf(selectedPos) !== -1) {
+                    yourShipPos.push(gameField[index]);
+                    $(this).addClass('taken');
                 }
                 boats--;
                 $('.game__boatsleft').text(boats);
             }
         } else {
-            if ($(selectedDiv).attr('class').split(' ').pop() === 'taken') {
-                posOfShip = yourShipPos.indexOf($(this).attr('class').split(' ').pop());
-                yourShipPos.splice(posOfShip, 1);
+            if ($(this).attr('class').split(' ').pop() === 'taken') {
                 $(this).removeClass('taken');
-                $(selectedDiv).removeClass('taken');
-                $(selectedDiv).addClass('empty');
+                posOfShip = yourShipPos.indexOf(selectedPos);
+                yourShipPos.splice(posOfShip, 1);
                 boats++;
                 $('.game__boatsleft').text(boats);
             }
@@ -633,22 +596,15 @@ function setupInit(guest){
     setupInfoBox()
     setupShips();
     userSetupProfile(guest);
-    boats = 20;
-
 }
 
 function gameEndScreen(winner,reason){
-    // $('<div class="game__overlay"></div>' +
-    //     '<div class="game__endscreen">' +
-    //         '<div class="game__endbuttons">' +
-    //             '<button type="button" class="game__submit setup">To setup</button>' +
-    //         '</div>' +
-    //     '</div>'
-    // ).insertAfter('.game__user');
+
     $('.game__buttons').empty();
     $('.game__buttons').append('<button type="button" class="game__submit setup">To setup</button>');
     $('.game__cell.enemy').unbind();
-
+    $('.game__user__field').css('opacity','0.5');
+    $('.game__enemy__field').css('opacity','0.5');
 
     if(reason){
         chatAddMessageWinnerDc(winner);
@@ -659,11 +615,16 @@ function gameEndScreen(winner,reason){
         }
     }
 
-    ajaxstatsProfileUpdate();
+    if(!guest){
+        ajaxstatsProfileUpdate();
+    }
 
     $('.game__submit.setup').click(function(){
-        $('.game').remove();
-        setupInit();
+        $('.container').empty();
+        yourShipPos = [];
+        takenPos = [];
+        boats = 20;
+        setupInit(guest);
         $(document).keypress(function(event){
             if(event.which == 13){
                 event.preventDefault();
@@ -675,12 +636,12 @@ function gameEndScreen(winner,reason){
 
 function gameCheckTurn(hitOrMiss){
     if(hitOrMiss){
-        $(selectedDiv).addClass('hit');
+        $(selectedDiv).removeClass('taken').addClass('hit');
         $('.game__scoreboard .right').text(--enemyShipLeft);
         chatAddMessageHit(input_username);
         user_hits++;
     }else{
-        $(selectedDiv).addClass('miss');
+        $(selectedDiv).removeClass('taken').addClass('miss');
         chatAddMessageMiss(input_username);
         gameClickHandler(false);
         user_miss++;
@@ -689,22 +650,18 @@ function gameCheckTurn(hitOrMiss){
 
 function gameCheckHitOrMiss(coordinates){
 
-
-    $('.game__cell.user.' + coordinates).addClass('miss');
     hitOrMiss = false;
+    i = yourShipPos.indexOf(coordinates);
 
-    for (i = 0; i < yourShipPos.length; i++) {
-        if(yourShipPos[i] === coordinates){
-            $('.game__cell.user.' + coordinates).addClass('hit');
-            $('.game__scoreboard .left').text(--userShipLeft);
-            yourShipPos.splice(i,1);
-            i = yourShipPos.length;
-            hitOrMiss = true;
-            chatAddMessageHit(partnerUsername);
-        }
-    }
-
-    if(hitOrMiss === false){
+    if(i !== -1){
+        $('.game__cell.user.' + coordinates).removeClass('taken');
+        $('.game__cell.user.' + coordinates).addClass('hit');
+        $('.game__scoreboard .left').text(--userShipLeft);
+        yourShipPos.splice(i,1);
+        hitOrMiss = true;
+        chatAddMessageHit(partnerUsername);
+    }else{
+        $('.game__cell.user.' + coordinates).addClass('miss');
         chatAddMessageMiss(partnerUsername);
         gameClickHandler(true);
     }
@@ -719,8 +676,16 @@ function gameCheckHitOrMiss(coordinates){
 function gameClickEnemyShip(){
     $('.game__cell.enemy').click(function(){
         selectedDiv = $(this);
-        selectedPos = $(this).attr('class').split(' ').pop();
-        if(takenPos.includes(selectedPos)){
+        selectedPos = $(this).attr('class').split(' ');
+
+        for (i = 0; i < selectedPos.length; i++) {
+            if(gameField.indexOf(selectedPos[i]) !== -1){
+                selectedPos = selectedPos[i];
+                break;
+            }
+        }
+
+        if(takenPos.indexOf(selectedPos) !== -1){
             console.log('already taken');
         }else{
             takenPos.push(selectedPos);
@@ -895,45 +860,43 @@ function userSetupProfile(guest){
         '</div>'
     );
 
+    if (!guest) {
+        $('.user__navbar ul').addClass('full');
+        $('.user__navbar ul').prepend('<li class="toggle"><a>Statistics</a></li>');
+        $('<div class="user__stats toggle">' +
+            '<div class="stats__top">' +
+                '<p>Your Stats</p>' +
+                '</div>' +
+            '<div class="stats__bottom">' +
+                '<ul></ul>' +
+            '</div>' +
+        '</div>').insertAfter('.user__navbar');
+
+
+        ajaxstatsProfileStats();
+        ajaxstatsProfileLeaderboard();
+
+        $('.user__navbar ul li').click(function(){
+            $('.user__navbar ul li').removeClass('toggle');
+            $(this).addClass('toggle');
+            if($(this).find('a').text() === 'Statistics'){
+                $('.user__leaderboard').removeClass('toggle');
+                $('.user__stats').addClass('toggle');
+            }
+            if($(this).find('a').text() === 'Leaderboard'){
+                $('.user__stats').removeClass('toggle');
+                $('.user__leaderboard').addClass('toggle');
+            }
+        });
+    }else{
+        ajaxstatsProfileLeaderboard();
+        $('.user__navbar ul li').addClass('toggle');
+        $('.user__leaderboard').addClass('toggle');
+    }
+
     $('.user__icon').click(function(){
         $('.user__profile').addClass('toggle');
         $('.user__box').addClass('toggle');
-
-        if (!guest) {
-            $('.user__navbar ul').addClass('full');
-            $('.user__navbar ul').prepend('<li class="toggle"><a>Statistics</a></li>');
-            $('<div class="user__stats toggle">' +
-                '<div class="stats__top">' +
-                    '<p>Your Stats</p>' +
-                '</div>' +
-                '<div class="stats__bottom">' +
-                    '<ul>' +
-
-                    '</ul>' +
-                '</div>' +
-            '</div>').insertAfter('.user__navbar');
-
-
-            ajaxstatsProfileStats();
-            ajaxstatsProfileLeaderboard();
-
-            $('.user__navbar ul li').click(function(){
-                $('.user__navbar ul li').removeClass('toggle');
-                $(this).addClass('toggle');
-                if($(this).find('a').text() === 'Statistics'){
-                    $('.user__leaderboard').removeClass('toggle');
-                    $('.user__stats').addClass('toggle');
-                }
-                if($(this).find('a').text() === 'Leaderboard'){
-                    $('.user__stats').removeClass('toggle');
-                }
-            });
-        }else{
-            ajaxstatsProfileLeaderboard();
-            $('.user__navbar ul li').addClass('toggle');
-            $('.user__leaderboard').addClass('toggle');
-        }
-
     });
 
     $('.user__exit').click(function(){
@@ -952,4 +915,4 @@ function userDisplayStats(data){
 function userDisplayLeaderboard(data){
     $('.user__leaderboard tbody').empty().html(data.leaderboard);
 }
-})();
+});
