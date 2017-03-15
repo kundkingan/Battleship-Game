@@ -6,14 +6,14 @@
 
 ## How to install
 
-####Server
+#### Server
 * Once you have downloaded the game, you have to navigate to **Battleship-Game/js/main.js** and find
 
 * ``` url = 'ws://domain:port' ```
 
 * and fill in your **domain** for NodeJS
 
-####NodeJS
+#### NodeJS
 
 * To get the NodeJS server to work you have to navigate to # **Battleship-Game/js/server/websocket_game.js** and find
 
@@ -33,7 +33,7 @@
 
 * And change **'url'** to the url you are using with port
 
-####Database
+#### Database
 
 * To get the database working you first need to have a MySQL database up and running, use this [SQL code](http://www.student.bth.se/~daae15/dbwebb-kurser/javascript/me/kmom10/sqlCode.txt) to create the tables needed.
 
